@@ -1,0 +1,41 @@
+initContainer:
+    name: init-container-name
+    image:
+        repository: init-container-repo
+        pullPolicy: Always
+        restartPolicy: Always
+container:
+    name: xchange-service
+    containerPort: 5000
+    portName: http-port
+image:
+    repository: ghcr.io/xcaliber-health/production-xchange-service
+    tag: a371dd6ae8b71c45b90cbcbf3f6f182b807fc9f3
+    pullPolicy: IfNotPresent
+    restartPolicy: Always
+externalSecrets:
+    enabled: false
+secretRef:
+    secretName: -xc1-default-instance-secrets
+service:
+    type: ClusterIP
+    port: 5000
+    portname: http-port
+ingress:
+    enabled: true
+    path: /chhs/xchange(/|$)(.*)
+    pathType: Prefix
+    host: xc1.codametrix.com
+    annotations:
+        nginx.ingress.kubernetes.io/rewrite-target: /$2
+HorizontalPodAutoscaler:
+    minReplicas: 2
+    maxReplicas: 3
+    averagecpuUtilization: 90
+    averagememoryUtilization: 90
+hpa:
+    cpulimits: 2000m
+    cpurequests: 200m
+    memorylimits: 5000Mi
+    memoryrequests: 1250Mi
+env: {}
