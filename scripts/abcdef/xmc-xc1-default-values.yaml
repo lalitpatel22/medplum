@@ -1,0 +1,51 @@
+initContainer:
+  name: init-container-name
+  image:
+    repository: init-container-repo
+    pullPolicy: IfNotPresent
+    restartPolicy: Always
+
+container:
+    name: container-name
+    containerPort: 8080
+    portName: http-port
+
+image: 
+    repository: container-repo
+    tag: v1.0.0
+    pullPolicy: IfNotPresent
+    restartPolicy: Always
+
+HorizontalPodAutoscaler:
+  minReplicas: 1
+  maxReplicas: 3
+  averagecpuUtilization: 80
+  averagememoryUtilization: 80
+
+externalSecrets: 
+  enabled: true
+
+secretRef:
+  secretName: xmc-xc1-default-instance-secrets
+
+service:
+  type: ClusterIP
+  port: 5000
+  portname: http-port
+
+Ingress:
+  enabled: true
+
+ingress:
+ path: /app
+ host: example.com
+ pathType: Prefix
+ annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /2
+hpa:
+  cpulimits: 2000m
+  cpurequests: 200m
+  memorylimits: 5000Mi
+  memoryrequests: 1250Mi
+
+env:
